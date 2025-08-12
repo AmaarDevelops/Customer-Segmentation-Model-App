@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Segmentation Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h2 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .plot-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Space between plots */
+        }
+        .plot-container {
+            flex: 1 1 45%; /* Allows two plots per row on larger screens, wraps on smaller */
+            min-width: 300px; /* Minimum width for plots */
+            box-sizing: border-box;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+        .download-link {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e7f0fa;
+            border: 1px solid #cce0f5;
+            border-radius: 5px;
+        }
+        .download-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .download-link a:hover {
+            text-decoration: underline;
+        }
+        /* Style for the error message */
+        .error-message {
+            background-color: #ffe0e0;
+            border: 1px solid #ff9999;
+            color: #cc0000;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Segmentation Analysis Results</h1>
+
+        {% if error_message %}
+            <div class="error-message">
+                <p>{{ error_message }}</p>
+                <p>Please go back to the <a href="{{ url_for('index') }}">upload page</a> and try again.</p>
+            </div>
+        {% else %}
+            <h2>Optimal Number of Clusters (K): {{ cluster_count }}</h2>
+            <p>Based on the Silhouette Score, the optimal number of segments for your uploaded data is **{{ cluster_count }}**.</p>
+
+            <h3>Cluster Summaries:</h3>
+            <p>Below are the average characteristics for each customer segment found in your data. Review these profiles to understand the unique traits of each group and inform your marketing decisions:</p>
+            {{ cluster_summary | safe }}
+
+            <h3>Gender Distribution by Cluster:</h3>
+            <p>This table shows the proportion of Male/Female customers within each segment:</p>
+            {{ gender_distribution | safe }}
+
+            <h2>Visualization of Segments:</h2>
+            <div class="plot-section">
+                {% for plot_url in plot_urls %}
+                    <div class="plot-container">
+                        <img src="{{ plot_url }}" alt="Segmentation Plot">
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="download-link">
+                <p>Download the full segmented customer data:</p>
+                <p><a href="{{ url_for('download', filename=download_link) }}">Download Segmented CSV</a></p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

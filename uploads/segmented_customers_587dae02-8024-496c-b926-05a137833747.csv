@@ -1,0 +1,21 @@
+CustomerID,Genre,Age,Annual Income (k$),Spending Score (1-100),cluster,Cluster_label
+201,Male,22,15,39,0,Cluster 0
+202,Female,35,20,77,0,Cluster 0
+203,Male,48,25,32,0,Cluster 0
+204,Female,60,30,15,0,Cluster 0
+205,Male,28,35,85,0,Cluster 0
+206,Female,42,40,45,0,Cluster 0
+207,Male,55,45,20,0,Cluster 0
+208,Female,30,50,90,0,Cluster 0
+209,Male,25,55,65,0,Cluster 0
+210,Female,40,60,50,0,Cluster 0
+211,Male,50,65,30,0,Cluster 0
+212,Female,33,70,88,1,Cluster 1
+213,Male,29,75,70,1,Cluster 1
+214,Female,45,80,40,1,Cluster 1
+215,Male,58,85,25,1,Cluster 1
+216,Female,38,90,75,1,Cluster 1
+217,Male,20,95,92,1,Cluster 1
+218,Female,52,100,60,1,Cluster 1
+219,Male,31,105,48,1,Cluster 1
+220,Female,49,110,18,1,Cluster 1
