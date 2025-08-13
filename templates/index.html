@@ -49,9 +49,23 @@
     <div class="upload-container">
         <h1>Upload Customer Data for Segmentation 📊</h1>
         <form action="/upload" method="post" enctype="multipart/form-data">
-            <p>Please upload your `Mall_Customers.csv` file:</p>
-            <input type="file" name="file" accept=".csv">
-            <input type="submit" value="Analyze Data">
+            <label for="file">Upload Customer CSV:</label>
+            <input type="file" name="file" id="file" accept=".csv" required><br><br>
+
+            <h3>Specify Column Names from your CSV:</h3>
+            <label for="age_col">Age Column Name:</label>
+            <input type="text" name="age_col" id="age_col" value="Age" required><br><br>
+
+            <label for="income_col">Annual Income Column Name:</label>
+            <input type="text" name="income_col" id="income_col" value="Annual Income (k$)" required><br><br>
+
+            <label for="spending_col">Spending Score Column Name:</label>
+            <input type="text" name="spending_col" id="spending_col" value="Spending Score (1-100)" required><br><br>
+
+            <label for="gender_col">Gender Column Name:</label>
+            <input type="text" name="gender_col" id="gender_col" value="Genre" required><br><br>
+
+            <input type="submit" value="Upload and Segment">
         </form>
     </div>
 </body>

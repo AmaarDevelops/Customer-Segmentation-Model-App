@@ -7,7 +7,7 @@ import pandas as pd
 from werkzeug.utils import secure_filename
 from flask import Flask, redirect, url_for, request, render_template, send_from_directory
 
-# Set Matplotlib backend to Agg to prevent Tkinter errors in Flask debug mode
+
 matplotlib.use('Agg')
 
 from model import (
@@ -15,16 +15,12 @@ from model import (
     preprocess_data,
     evaluate_kmeans_clusters,
     apply_final_clustering,
-    # get_all_marketing_strategies_data # No longer directly used for hardcoded strategies
 )
 
 app = Flask(__name__)
 UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-# Define the correct column names as global constants or pass them down.
-# Let's pass them down to save_all_segmentation_plots for consistency.
 
 # --- Helper function to save all plots ---
 # This function now takes NUMERICAL_FEATURES and CATEGORICAL_FEATURES
@@ -41,9 +37,9 @@ def save_all_segmentation_plots(df: pd.DataFrame, upload_folder: str,
 
     # Unpack the specific feature names for clarity in plotting
     age_col = numerical_features[0] # 'Age'
-    annual_income_col = numerical_features[1] # 'Annual Income (k$)'
-    spending_score_col = numerical_features[2] # 'Spending Score (1-100)'
-    gender_col = categorical_features[0] # 'Genre' or 'Gender'
+    annual_income_col = numerical_features[1] 
+    spending_score_col = numerical_features[2] 
+    gender_col = categorical_features[0] 
 
     # 1. Elbow Method Plot (Using data returned from model.py)
     plt.figure(figsize=(8, 6))
@@ -156,9 +152,15 @@ def upload():
     file.save(temp_filepath)
 
     try:
-        # These features MUST match your CSV headers EXACTLY.
-        NUMERICAL_FEATURES = ['Age', 'Annual Income (k$)', 'Spending Score (1-100)']
-        CATEGORICAL_FEATURES = ['Genre'] # Ensure this matches 'Genre' or 'Gender' in your CSV
+        # Get column names from user input
+        age_col = request.form.get('age_col')
+        income_col = request.form.get('income_col')
+        spending_col = request.form.get('spending_col')
+        gender_col = request.form.get('gender_col')
+
+        
+        NUMERICAL_FEATURES = [age_col, income_col, spending_col]
+        CATEGORICAL_FEATURES = [gender_col]
 
         # 1. Load and Inspect Data
         df_original = load_and_inspect_data(temp_filepath)
@@ -173,21 +175,21 @@ def upload():
         k_range = range(2, 11) # Start from 2 for Silhouette Score
         inertia_scores, silhouette_values = evaluate_kmeans_clusters(x_preprocessed_data, k_range)
 
-        # --- NEW LOGIC TO DETERMINE OPTIMAL_K DYNAMICALLY ---
+        
         if not silhouette_values:
             optimal_k = k_range[0]
         else:
             best_silhouette_idx = silhouette_values.index(max(silhouette_values))
             optimal_k = list(k_range)[best_silhouette_idx]
         print(f"Dynamically determined OPTIMAL_K: {optimal_k}")
-        # --- END NEW LOGIC ---
+    
 
-        # 3. Apply final clustering using the dynamically determined optimal_k
+    
         df_clustered = apply_final_clustering(
             df_processing, x_preprocessed_data, optimal_k
         )
 
-        # Dynamically create the 'Cluster_label' column for display purposes.
+    
         df_clustered['Cluster_label'] = df_clustered['cluster'].apply(lambda x: f"Cluster {x}")
 
         # Generate and save all plots using the helper function
@@ -203,15 +205,14 @@ def upload():
         segmented_output_filepath = os.path.join(app.config['UPLOAD_FOLDER'], segmented_output_filename)
         df_clustered.to_csv(segmented_output_filepath, index=False)
 
-        # Get summaries for template - these will use the dynamic 'Cluster_label'
-        # Ensure NUMERICAL_FEATURES are used correctly here for the groupby summary
+        
         cluster_summary_html = df_clustered.groupby('Cluster_label')[NUMERICAL_FEATURES].mean().to_html()
 
-        # Ensure CATEGORICAL_FEATURES[0] ('Genre') is used here for gender distribution
+    
         gender_distribution = df_clustered.groupby('Cluster_label')[CATEGORICAL_FEATURES[0]].value_counts(normalize=True).unstack(fill_value=0)
         gender_distribution_html = gender_distribution.to_html()
 
-        # Render template
+        
         return render_template(
             'results.html',
             cluster_count=optimal_k,

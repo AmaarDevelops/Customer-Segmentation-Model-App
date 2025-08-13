@@ -59,21 +59,16 @@ def evaluate_kmeans_clusters(preprocessed_data: np.ndarray, k_range: range) -> t
         kmeans.fit(preprocessed_data)
         inertia_scores.append(kmeans.inertia_)
 
-        if k > 1: # Silhouette score requires at least 2 clusters
+        if k > 1: 
             score = silhouette_score(preprocessed_data, kmeans.labels_)
             silhouette_values.append(score)
-        else: # For k=1, silhouette score is undefined, or 0 by convention for plotting
+        else: 
             silhouette_values.append(0) 
 
-    # If k_range starts from 1, the first element (for k=1) in silhouette_values will be 0.
-    # We only care about actual silhouette scores for k > 1.
-    # The `app.py` expects `silhouette_values` to align with `k_range` starting from the second element of `k_range` (i.e., k=2).
-    # If k_range starts from 2 in app.py, then this list already aligns.
+  
     return inertia_scores, silhouette_values
 
-# --- Apply Final Clustering ---
-# MODIFIED: Removed CLUSTER_LABELS_MAP argument.
-# It now only returns the DataFrame with the raw cluster assignments.
+
 def apply_final_clustering(df_original: pd.DataFrame, preprocessed_data: np.ndarray, optimal_k: int) -> pd.DataFrame:
     """
     Applies K-Means clustering with the optimal K and returns the DataFrame
@@ -86,21 +81,3 @@ def apply_final_clustering(df_original: pd.DataFrame, preprocessed_data: np.ndar
     # 'Cluster_label' will now be added in app.py (e.g., 'Cluster 0', 'Cluster 1')
     return df_original
 
-# --- Marketing Strategies Data (Kept for reference, but NOT USED by app.py for display) ---
-# You can remove this function entirely if you are certain you will never need it.
-def get_all_marketing_strategies_data() -> dict:
-    """
-    Returns a dictionary of marketing strategies for each cluster ID (0-7).
-    NOTE: This is hardcoded for a specific 8-cluster scenario and is no longer
-    used by app.py for display in results.html when K is dynamic.
-    """
-    return {
-        0: {"profile": "Customers with average income and average spending.", "strategy": ["Offer loyalty programs.", "Focus on retention."]},
-        1: {"profile": "Young customers with high spending habits.", "strategy": ["Target with trendy products.", "Engage on social media."]},
-        2: {"profile": "Older, low-income customers.", "strategy": ["Focus on essential goods.", "Provide discounts."]},
-        3: {"profile": "High-income customers with low spending.", "strategy": ["Promote luxury items.", "Exclusive offers."]},
-        4: {"profile": "Mid-age high spenders.", "strategy": ["Seasonal promotions.", "Family-oriented deals."]},
-        5: {"profile": "High income and high spending customers (Valuable).", "strategy": ["Premium product launches.", "Personalized shopping experience."]},
-        6: {"profile": "Mid-age low spenders.", "strategy": ["Value-for-money products.", "Upselling opportunities."]},
-        7: {"profile": "Older, low spenders.", "strategy": ["Accessibility services.", "Health-related products."]}
-    }
